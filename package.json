@@ -1,0 +1,33 @@
+{
+  "name": "threaded-lock",
+  "version": "0.0.2-dev",
+  "description": "A threaded lock for Javascript written in Typescript",
+  "main": "dist/index.js",
+  "typings": "dist/typings/index.d.ts",
+  "scripts": {
+    "prepublish": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cycleplatform/threaded-lock.git"
+  },
+  "keywords": [
+    "lock",
+    "threaded",
+    "async"
+  ],
+  "author": "Petrichor, Inc.",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cycleplatform/threaded-lock/issues"
+  },
+  "homepage": "https://github.com/cycleplatform/threaded-lock#readme",
+  "dependencies": {
+    "moment": "^2.14.1"
+  },
+  "devDependencies": {
+    "@types/moment": "^2.13.0",
+    "tslint": "^3.15.1",
+    "typescript": "^2.0.0"
+  }
+}

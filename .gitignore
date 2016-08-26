@@ -1,0 +1,42 @@
+# Default Extensions
+*.diff
+*.err
+*.log
+*.orig
+*.rej
+*.swo
+*.swp
+*.vi
+*.zip
+*.tgz
+*.iml
+*~
+
+# OS/Editor Files/Folders
+._*
+.cache
+.DS_Store
+.project
+.settings
+.vscode
+.tmproj
+.idea
+*.esproj
+*.sublime-project
+*.sublime-workspace
+nbproject
+Thumbs.db
+
+# NPM
+npm-debug.log*
+node_modules
+
+# Project Folders
+.tscache
+.test
+tmp
+.build
+build
+dist
+#public
+config/app/meta

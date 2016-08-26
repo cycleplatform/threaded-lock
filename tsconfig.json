@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "declarationDir": "./dist/typings",
+        "target": "es6",
+        "outDir": "./dist",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "strictNullChecks": true,
+        "pretty": true,
+        "removeComments": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "baseUrl": "./src",
+        "paths": {
+            "*": [
+                "./src"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
