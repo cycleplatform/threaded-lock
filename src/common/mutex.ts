@@ -1,31 +1,54 @@
 import * as Storage from "./storage";
 import Lock from "./lock";
 
-export default class Mutex {
-    constructor (private key: string, private ttl: number) {}
+export default class {
+    constructor(private key: string, private ttl: number) { }
 
     public lock() {
+        console.log("Locking ", this.key);
         return new Promise<Lock>((res) => {
-            let lock = Storage.getStorage().read(this.key);
-            if (!lock || lock.timeout(this.ttl)) {
-                Storage.getStorage().write(this.key, new Lock(true));
+            if (!this.isLocked()) {
+                console.log("Lock is not locked. Generating new.");
+                const lock = new Lock(true);
+                Storage.getStorage().write(this.key, lock);
                 res(lock);
                 return;
             }
 
-            let interval = setInterval(() => {
-                lock = Storage.getStorage().read(this.key);
-                if (!lock || lock.timeout(this.ttl)) {
-                    Storage.getStorage().write(this.key, new Lock(true));
-                    clearInterval(interval);
+            let resolve = () => {
+                console.log("Storage event received");
+                console.log("Lock is", this.isLocked());
+                if (!this.isLocked()) {
+                    console.log("Removing event");
+                    window.removeEventListener("storage", resolve);
+                    console.log("unblocking");
                     res();
-                    return;
                 }
-            });
+            };
+
+            window.addEventListener("storage", resolve);
+
         });
     }
 
     public unlock() {
-        Storage.getStorage().clear(this.key);
+        Storage.getStorage().write(this.key, new Lock(false));
+    }
+
+    private isLocked() {
+        console.log("Checking if", this.key, "is locked");
+        const lock = Storage.getStorage().read(this.key);
+        console.log(lock);
+        if (lock) {
+            console.log("Lock exists");
+            if (lock.timeout(this.ttl)) {
+                console.log("Lock is expired");
+                return false;
+            }
+            console.log("Lock is ", lock.locked);
+            return lock.locked;
+        }
+        console.log("Lock doesn't exist");
+        return false;
     }
 }

@@ -1,14 +1,13 @@
-import * as moment from "moment";
-
 export default class Lock {
     locked: boolean;
-    time: string;
+    time: Date;
     constructor(locked: boolean) {
         this.locked = locked;
-        this.time = new Date().toISOString();
+        this.time = new Date();
     }
 
     public timeout(ttl: number) {
-        return moment(this.time).diff(moment()) > ttl;
+        const curTime = new Date();
+        return Math.abs(this.time.getTime() - curTime.getTime()) >= ttl;
     }
 }
