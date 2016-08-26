@@ -1,10 +1,10 @@
 import * as moment from "moment";
 
 export default class Lock {
-    locked: any;
+    locked: boolean;
     time: string;
     constructor(locked: boolean) {
-        this.locked = true;
+        this.locked = locked;
         this.time = new Date().toISOString();
     }
 
