@@ -15,7 +15,7 @@ export async function NewThreadedLock(key: string, ttl: number = 5000): Promise<
                 localStorage[tl.key] = tl.id;
             }
             res(tl);
-        }, Math.ceil(Math.random() * 500 + 500));
+        }, Math.ceil(Math.random() * 1000));
     });
     return promise;
 }
