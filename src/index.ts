@@ -14,6 +14,7 @@ export class Lock {
         if (!this.seed) {
             this.seed = Math.random();
         }
+        this.timeout = Date.now() + this.timeout;
     }
 
     public lock() {
@@ -21,7 +22,7 @@ export class Lock {
             let check: EventListener;
             check = () => {
                 const doublecheck = this.read();
-                if (!doublecheck) {
+                if (!doublecheck || doublecheck.timeout < Date.now()) {
                     // Lock released
                     window.removeEventListener("storage", check);
                     res();
@@ -33,9 +34,11 @@ export class Lock {
                 this.write();
                 setTimeout(() => {
                     const doublecheck = this.read();
-                    if (doublecheck && doublecheck.seed === this.seed) {
-                        window.removeEventListener("storage", check);
-                        res();
+                    if (doublecheck) {
+                        if (doublecheck.seed === this.seed || doublecheck.timeout < Date.now()) {
+                            window.removeEventListener("storage", check);
+                            res();
+                        }
                     }
                 }, interval);
             }
