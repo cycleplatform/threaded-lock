@@ -46,7 +46,6 @@ export default class {
                 }
             };
 
-            let claimed = false;
             const existing = this.read();
             if (!existing || existing.expires < Date.now()) {
                 this.write();
@@ -54,6 +53,8 @@ export default class {
                 // that we still have the lock claimed.
                 setTimeout(() => {
                     const doublecheck = this.read();
+                    let claimed = false;
+
                     if (doublecheck) {
                         if (doublecheck.seed === this.seed || doublecheck.expires < Date.now()) {
                             claimed = true;
@@ -68,13 +69,13 @@ export default class {
                     }
 
                     // Trigger blocked flow
-                    this.waitOnLockFlow(res, rej);
+                    this.waitOnLockFlow();
                 }, interval);
 
                 return;
             }
 
-            this.waitOnLockFlow(res, rej);
+            this.waitOnLockFlow();
         });
     }
 
@@ -145,7 +146,7 @@ export default class {
      * Wait until either it has been unlocked from local storage 
      * or expires.
      */
-    private waitOnLockFlow(res: Function, rej: Function) {
+    private waitOnLockFlow() {
         window.addEventListener("storage", <EventListener>this.lockCheck);
         // In case other tab closed pre-maturely while we're waiting
         this.heartbeat = setInterval(() => {
