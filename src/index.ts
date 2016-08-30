@@ -29,7 +29,6 @@ export class Lock {
                 const doublecheck = this.read();
                 // If exists and hasn't expired'
                 if (doublecheck && doublecheck.expires > Date.now()) {
-                    console.log("Lock is still claimed.", this.seed);
                     return;
                 }
                 
@@ -41,26 +40,15 @@ export class Lock {
             let claimed = false;
             const existing = this.read();
             if (!existing || existing.expires < Date.now()) {
-                if (!existing) {
-                    console.log("Lock doesn't exist. Attempting claim.", this.seed);
-                } else {
-                    console.log(existing.expires, Date.now(), existing.expires < Date.now());
-                    console.log("Lock expired. Attempting claim.");
-                }
-
                 this.write();
                 setTimeout(() => {
-                    console.log("Double checking lock is still ours", this.seed);
                     const doublecheck = this.read();
-                    console.log("Doublecheck says: ", doublecheck);
                     if (doublecheck) {
                         if (doublecheck.seed === this.seed || doublecheck.expires < Date.now()) {
                             claimed = true;
                             this.claimLockFlow(res, rej);
                             return;
                         }
-
-                        console.log("Lock isn't ours. Waiting...");
                     }
 
                     if (claimed) {
@@ -79,15 +67,11 @@ export class Lock {
 
     public unlock() {
         // Dont unlock one that's not the same
-        console.log("Unlocking....", this.seed);
         let lock = this.read();
 
         if (lock && lock.seed !== this.seed && lock.expires > Date.now()) {
-            console.log("Lock is claimed and not expired. Not deleting.", lock.seed);
             return false;
         }
-
-        console.log("Clearing out lock", this.seed);
 
         clearInterval(this.heartbeat);
         window.removeEventListener("storage", <EventListener>this.lockCheck);
@@ -97,7 +81,6 @@ export class Lock {
 
     private read(): SavedLock | undefined {
         const res = localStorage.getItem(this.name);
-        console.log("Raw storage output: ", res);
         if (!res) {
             return undefined;
         }
@@ -118,21 +101,17 @@ export class Lock {
     }
 
     private claimLockFlow(res: Function, rej: Function) {
-        console.log("Lock is ours. Claiming.");
         this.setExpiration();
         // lock has been claimed
         window.removeEventListener("storage", <EventListener>this.lockCheck);
         this.heartbeat = setInterval(() => {
-            console.log("Updating expiration.");
             this.setExpiration();
             this.write();
         }, this.timeout - this.timeout / 2);
         res();
-        console.log("resolved");
     }
 
     private waitOnLockFlow(res: Function, rej: Function) {
-        console.log("Waiting on lock in another tab");
         window.addEventListener("storage", <EventListener>this.lockCheck);
         // In case other tab closed pre-maturely while we're waiting
         this.heartbeat = setInterval(() => {
