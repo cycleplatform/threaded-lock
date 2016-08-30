@@ -10,7 +10,7 @@ interface SavedLock {
 // ms interval to double check
 const interval = 40;
 
-export class Lock {
+export default class {
     private lockCheck: Function;
     private heartbeat: number;
     private expires: number;
