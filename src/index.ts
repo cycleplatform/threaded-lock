@@ -1,5 +1,9 @@
-// Lock object
+/**
+ * Threaded lock
+ * Copyright 2016 Petrichor, Inc. 
+ */
 
+// Object read out of localStorage
 interface SavedLock {
     name: string;
     timeout: number;
@@ -22,6 +26,11 @@ export default class {
         this.setExpiration();
     }
 
+    /**
+     * Attempt to claim the lock.
+     * Will either claim a lock and block others,
+     * or will wait for the claimer to unlock
+     */
     public lock() {
         return new Promise<void>((res, rej) => {
             // Called on local storage change
@@ -41,11 +50,14 @@ export default class {
             const existing = this.read();
             if (!existing || existing.expires < Date.now()) {
                 this.write();
+                // Double check after our interval to ensuer
+                // that we still have the lock claimed.
                 setTimeout(() => {
                     const doublecheck = this.read();
                     if (doublecheck) {
                         if (doublecheck.seed === this.seed || doublecheck.expires < Date.now()) {
                             claimed = true;
+                            // Trigger claimed flow
                             this.claimLockFlow(res, rej);
                             return;
                         }
@@ -55,6 +67,7 @@ export default class {
                         return;
                     }
 
+                    // Trigger blocked flow
                     this.waitOnLockFlow(res, rej);
                 }, interval);
 
@@ -65,10 +78,14 @@ export default class {
         });
     }
 
+    /**
+     * Unlock this lock
+     */
     public unlock() {
         // Dont unlock one that's not the same
         let lock = this.read();
 
+        // Only unlock if we own the lock, or there is a stale lock in storage (expired)
         if (lock && lock.seed !== this.seed && lock.expires > Date.now()) {
             return false;
         }
@@ -79,6 +96,9 @@ export default class {
         return true;
     }
 
+    /**
+     * Read out of localstorage and parse it
+     */
     private read(): SavedLock | undefined {
         const res = localStorage.getItem(this.name);
         if (!res) {
@@ -92,14 +112,23 @@ export default class {
         }
     }
 
+    /**
+     * Write current object to storage
+     */
     private write() {
         localStorage.setItem(this.name, JSON.stringify(this));
     }
 
+    /**
+     * Update the expiration time
+     */
     private setExpiration() {
         this.expires = Date.now() + this.timeout;
     }
 
+    /**
+     * In this situation, the lock will be claimed by us.
+     */
     private claimLockFlow(res: Function, rej: Function) {
         this.setExpiration();
         // lock has been claimed
@@ -111,6 +140,11 @@ export default class {
         res();
     }
 
+    /**
+     * In this situation, the lock has already been claimed.
+     * Wait until either it has been unlocked from local storage 
+     * or expires.
+     */
     private waitOnLockFlow(res: Function, rej: Function) {
         window.addEventListener("storage", <EventListener>this.lockCheck);
         // In case other tab closed pre-maturely while we're waiting
