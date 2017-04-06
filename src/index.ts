@@ -1,6 +1,6 @@
 /**
  * Threaded lock
- * Copyright 2016 Petrichor, Inc. 
+ * Copyright 2017 Petrichor, Inc. 
  */
 
 // Object read out of localStorage

@@ -1,6 +1,6 @@
 {
   "name": "threaded-lock",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A threaded lock for Javascript written in Typescript",
   "main": "dist/index.js",
   "typings": "dist/typings/index.d.ts",
@@ -25,5 +25,8 @@
   "devDependencies": {
     "tslint": "^3.15.1",
     "typescript": "^2.0.0"
+  },
+  "dependencies": {
+    "tslib": "^1.6.0"
   }
 }

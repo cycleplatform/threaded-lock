@@ -3,7 +3,7 @@
         "module": "commonjs",
         "declaration": true,
         "declarationDir": "./dist/typings",
-        "target": "es6",
+        "target": "es5",
         "outDir": "./dist",
         "noImplicitAny": true,
         "noImplicitReturns": true,
@@ -12,6 +12,13 @@
         "removeComments": true,
         "suppressImplicitAnyIndexErrors": true,
         "baseUrl": "./src",
+        "noEmitHelpers": true,
+        "importHelpers": true,
+        "lib": [
+            "dom",
+            "es5",
+            "es2015.promise"
+        ],
         "paths": {
             "*": [
                 "./src"
